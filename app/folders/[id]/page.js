@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid2";
 import { useParams } from "next/navigation"; 
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import NoDataComponent from "@/app/components/No-Data/no-data";
 import Item from "@/app/components/Item/Item";
 
@@ -21,9 +21,8 @@ export default function Home() {
   const params = useParams(); 
   const { id } = params;  
 
-  const findById = (data, id) => {
+  const findById = useCallback((data, id) => {
     for (const item of data) {
-      // Check if the current item has the matching id
       if (item.id === id) {
         return item;
       }
@@ -33,9 +32,9 @@ export default function Home() {
       }
     }
     return null;
-  };
-  const filteredData = findById(filesData.data, id);
-   console.log(filteredData);
+  });
+
+  const filteredData = useMemo(() => findById(filesData.data, id), [filesData.data, findById, id]);
  
 
   return (

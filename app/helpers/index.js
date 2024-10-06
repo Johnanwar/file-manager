@@ -1,37 +1,58 @@
-// add folder function
-export const addFolderToParent = (folders, parentId, newFolder) => {
-    return folders.map(folder => {
-      if (folder.id == parentId) {  
-        return {
-          ...folder,
-          data: [...folder.data, newFolder] 
-        };
+// add nested file or folder by parent id function
+export const addUnderParent = (folders, parentId, newFolder) => {
+  return folders.map((folder) => {
+    if (folder.id == parentId) {
+      return {
+        ...folder,
+        data: [...folder.data, newFolder],
+      };
+    }
+    if (folder.data && folder.data.length > 0) {
+      return {
+        ...folder,
+        data: addUnderParent(folder.data, parentId, newFolder),
+      };
+    }
+    return folder;
+  });
+};
+
+// delete file or folder by id 
+export const deleteById = (folders, id) => {
+  return folders
+    .map((folder) => {
+      if (folder.id === id) {
+        return null;
       }
+
       if (folder.data && folder.data.length > 0) {
         return {
           ...folder,
-          data: addFolderToParent(folder.data, parentId, newFolder)
+          data: deleteById(folder.data, id),
         };
       }
       return folder;
-    });
-  };
+    })
+    .filter(Boolean);
+};
 
-  export const deleteFolderById = (folders, folderId) => {
+
+// rename file or folder by id 
+export const renameById = (folders, id, name) => {
     return folders
-      .map(folder => {
-        if (folder.id === folderId) {
-          return null;
+      .map((folder) => {
+        if (folder.id === id) {
+           folder.name = name;
+          return folder 
         }
   
         if (folder.data && folder.data.length > 0) {
           return {
             ...folder,
-            data: deleteFolderById(folder.data, folderId) 
+            data: renameById(folder.data, id, name),
           };
         }
-          return folder;
+        return folder;
       })
       .filter(Boolean);
-  };
-  
+    }  

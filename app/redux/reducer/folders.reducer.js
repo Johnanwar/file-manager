@@ -1,4 +1,4 @@
-import { addFolderToParent } from "@/app/helpers";
+import { addUnderParent, deleteById, renameById } from "@/app/helpers";
 import { createSlice } from "@reduxjs/toolkit";
 
 
@@ -26,25 +26,18 @@ const foldersSlice = createSlice({
     addNewFileOrFolder: (state, action) => {
       state.data.push(action.payload);
     },
+
     renameFile: (state, action) => {
-      const selectedFile = state.data?.find(
-        (el) => el.id === action.payload.id
-      );
-      if (selectedFile) {
-        selectedFile.name = action.payload.name;
-      }
+      state.data = renameById(state.data, action.payload?.id, action.payload.name);
     },
+
     deleteFile: (state, action) => {
-      // const updatedData = state.data.filter(
-      //   (item) => item.id !== action.payload?.id
-      // );
-      // state.data = updatedData;
-      state.data = deleteFolderById(state.data, action.payload?.id);
+      state.data = deleteById(state.data, action.payload?.id);
     },
+
     addNestedFolder: (state, action) => {
       const { parentId, newFolder } = action.payload;
-       console.log( addFolderToParent([...state.data], parentId, newFolder), "fgfggfgfgfg")
-      state.data = addFolderToParent(state.data, parentId, newFolder);
+      state.data = addUnderParent(state.data, parentId, newFolder);
     }
   },
 });
